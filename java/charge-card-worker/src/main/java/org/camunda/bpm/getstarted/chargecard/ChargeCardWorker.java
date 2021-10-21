@@ -18,6 +18,8 @@ package org.camunda.bpm.getstarted.chargecard;
 
 import java.awt.Desktop;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.camunda.bpm.client.ExternalTaskClient;
@@ -37,9 +39,17 @@ public class ChargeCardWorker {
 				.handler((externalTask, externalTaskService) -> {
 					// Put your business logic here
 
+					System.out.println("Show all variables with type:");
+					Map<String, Object> vars = externalTask.getAllVariables();
+					vars.entrySet()
+							.stream()
+							.map(e -> e.getKey() + ": " + e.getValue().getClass().getName())
+							.forEach(System.out::println);
+
+
 					// Get a process variable
 					String item = externalTask.getVariable("item");
-					Integer amount = externalTask.getVariable("amount");
+					Long amount = externalTask.getVariable("amount");
 					LOGGER.info("Charging credit card with an amount of '" + amount + "'€ for the item '" + item + "'...");
 					
 					try {
