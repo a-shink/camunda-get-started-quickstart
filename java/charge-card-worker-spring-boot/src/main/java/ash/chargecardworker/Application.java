@@ -28,12 +28,14 @@ public class Application {
       // Put your business logic here
       LOG.info("Execute business logic for External Task with id '{}'", externalTask.getId());
 
+      /*
       System.out.println("Show all variables with type:");
       Map<String, Object> vars = externalTask.getAllVariables();
       vars.entrySet()
               .stream()
               .map(e -> e.getKey() + ": " + e.getValue().getClass().getName())
               .forEach(System.out::println);
+       */
 
       // Get a process variable
       String item = externalTask.getVariable("item");
