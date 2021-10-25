@@ -8,12 +8,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.awt.*;
-import java.net.URI;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 @SpringBootApplication
 public class Application {
+  static AtomicLong instancesCreated = new AtomicLong();
 
   protected static Logger LOG = LoggerFactory.getLogger(Application.class);
 
@@ -43,8 +42,13 @@ public class Application {
       LOG.info("Charging credit card with an amount of '" + amount + "'€ for the item '" + item + "'...");
 
 
+      try {
+        Thread.sleep(7500);
+      } catch (InterruptedException e) {}
+
       // Complete the task
       externalTaskService.complete(externalTask);
+      instancesCreated.decrementAndGet();
     };
   }
 

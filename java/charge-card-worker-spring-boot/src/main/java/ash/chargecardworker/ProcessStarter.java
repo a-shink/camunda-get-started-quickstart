@@ -1,14 +1,10 @@
 package ash.chargecardworker;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -19,10 +15,20 @@ import java.util.Random;
 public class ProcessStarter {
     private static final List<String> items = List.of("FIRST ITEM", "item two", "Item#3", "Medium price product", "Luxury item$$$");
 
+    @Value("${camunda.bpm.client.base-url:http://localhost:8080/engine-rest}")
+    String camundaBaseURL;
+
+    private String someDefault;
     @Scheduled(fixedDelay = 5000)
     public void scheduleStartCamundaPaymentRetrieval() {
-        RestTemplate restTemplate = new RestTemplate();
+        long instancesNow = Application.instancesCreated.get();
 
+        if (instancesNow > 10) {
+            System.out.println("Too many instances already created - so skip creating new");
+            return;
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -33,7 +39,13 @@ public class ProcessStarter {
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(
-                "http://localhost:8080/engine-rest/process-definition/key/payment-retrieval/start", request , String.class);
-        //System.out.println(response.getBody());
+                camundaBaseURL + "/process-definition/key/payment-retrieval/start", request , String.class);
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            System.out.println("Not 200 code returned but " + response.getStatusCodeValue() + " check response:");
+            System.out.println(response.getBody());
+        } else {
+            Application.instancesCreated.incrementAndGet();
+        }
     }
 }
