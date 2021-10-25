@@ -31,7 +31,7 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
         }
 
         if (instancesNow > 10) {
-            System.out.println(String.format("Too many instances(%1$d) already created - so skip creating new", instancesNow));
+            LOG.debug(String.format("Too many instances(%1$d) already created - so skip creating new", instancesNow));
             return;
         }
 
@@ -42,7 +42,7 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
 
         if (started) {
             instancesNow = instancesCreated.incrementAndGet();
-            System.out.println("Created another instance - " + instancesNow);
+            LOG.debug("Created another instance - " + instancesNow);
         }
     }
 
@@ -61,9 +61,13 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
         */
 
         // Get a process variable
+        String instanceId = externalTask.getProcessInstanceId();
         String item = externalTask.getVariable("item");
         Long amount = externalTask.getVariable("amount");
-        LOG.info("Charging credit card with an amount of '" + amount + "'€ for the item '" + item + "'...");
+        LOG.info(instanceId + ": Charging credit card with an amount of '" + amount + "'€ for the item '" + item + "'...");
+
+        String varsDump = camundaClient.getProcessInstanceVariables(instanceId);
+        LOG.debug("All variables of instance '{}' via REST: {}",  instanceId, varsDump);
 
         long instancesNow = camundaClient.countProcessInstances();
         // Don't pause when >13 instances

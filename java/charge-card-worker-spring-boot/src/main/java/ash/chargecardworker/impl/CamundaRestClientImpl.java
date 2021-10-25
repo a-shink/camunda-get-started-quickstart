@@ -53,8 +53,14 @@ public class CamundaRestClientImpl implements CamundaRestClient {
         return count;
     }
 
+    public String getProcessInstanceVariables(String instanceId) {
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                camundaBaseURL + String.format("/process-instance/%1$s/variables", instanceId), String.class);
+        String answer = (response.getStatusCode() == HttpStatus.OK)? response.getBody(): "";
+        return answer;
+    }
     static class CountProcessInstancesResult{
-        long count;
+        private long count;
 
         public long getCount() {
             return count;

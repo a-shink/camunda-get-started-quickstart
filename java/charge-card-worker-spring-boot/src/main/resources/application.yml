@@ -6,4 +6,4 @@ camunda.bpm.client:
 
 process.defkey: payment-retrieval
 
-logging.level.org.camunda.bpm.client: info
+logging.level.ash.chargecardworker: debug
