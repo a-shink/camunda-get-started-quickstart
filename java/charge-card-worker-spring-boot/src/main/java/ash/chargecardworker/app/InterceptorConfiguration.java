@@ -1,4 +1,4 @@
-package ash.chargecardworker;
+package ash.chargecardworker.app;
 
 import org.camunda.bpm.client.interceptor.ClientRequestInterceptor;
 import org.slf4j.Logger;

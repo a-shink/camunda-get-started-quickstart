@@ -14,19 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @SpringBootApplication
 public class Application {
-  @Autowired
-  CamundaProcessService processService;
-
   public static void main(String... args) {
     SpringApplication.run(Application.class, args);
   }
-
-  @Bean
-  @ExternalTaskSubscription("charge-card")
-  public ExternalTaskHandler myTopicHandler() {
-    return (externalTask, externalTaskService) -> {
-      processService.handle(externalTask, externalTaskService);
-    };
-  }
-
 }
