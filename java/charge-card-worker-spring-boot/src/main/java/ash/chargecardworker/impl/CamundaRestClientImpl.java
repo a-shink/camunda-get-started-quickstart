@@ -41,9 +41,10 @@ public class CamundaRestClientImpl implements CamundaRestClient {
         uriVariables.put("processDefinitionKey", processDefinitionKey);
 
         ResponseEntity<CountProcessInstancesResult> response = restTemplate.getForEntity(
-                camundaBaseURL + "/process-instance/count", CountProcessInstancesResult.class, uriVariables);
+                camundaBaseURL + "/process-instance/count?processDefinitionKey=" + processDefinitionKey, CountProcessInstancesResult.class);
 
-        return (response.getStatusCode() == HttpStatus.OK)? response.getBody().getCount() : -1;
+        long count = (response.getStatusCode() == HttpStatus.OK)? response.getBody().getCount() : -1;
+        return count;
     }
 
     static class CountProcessInstancesResult{
