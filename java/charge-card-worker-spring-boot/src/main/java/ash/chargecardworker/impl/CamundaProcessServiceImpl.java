@@ -38,13 +38,11 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
 
         long amount = 200l + new Random().nextInt(300);
         String item = items.get(new Random().nextInt(items.size()));
-        ResponseEntity<String> response = camundaClient.startProcess(item, amount);
+        boolean started = camundaClient.startProcess(item, amount);
 
-        if (response.getStatusCode() != HttpStatus.OK) {
-            System.out.println("Not 200 code returned but " + response.getStatusCodeValue() + " check response:");
-            System.out.println(response.getBody());
-        } else {
-            instancesCreated.incrementAndGet();
+        if (started) {
+            instancesNow = instancesCreated.incrementAndGet();
+            System.out.println("Created another instance - " + instancesNow);
         }
     }
 

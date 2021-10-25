@@ -24,7 +24,7 @@ public class CamundaRestClientImpl implements CamundaRestClient {
     }
 
     @Override
-    public ResponseEntity<String> startProcess(String item, long amount) {
+    public boolean startProcess(String item, long amount) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String body = String.format("{\"variables\": {\"amount\": {\"value\":%1$d, \"type\":\"long\"}, \"item\": {\"value\": \"%2$s\"} } }", amount, item);
@@ -33,7 +33,13 @@ public class CamundaRestClientImpl implements CamundaRestClient {
         ResponseEntity<String> response = restTemplate.postForEntity(
                 camundaBaseURL + "/process-definition/key/" + processDefinitionKey + "/start", request , String.class);
 
-        return response;
+        if (response.getStatusCode() != HttpStatus.OK) {
+            System.out.println("Not 200 code returned but " + response.getStatusCodeValue() + " check response:");
+            System.out.println(response.getBody());
+            return false;
+        }
+
+        return true;
     }
 
     public long countProcessInstances() {
