@@ -31,7 +31,7 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
         }
 
         if (instancesNow > 10) {
-            System.out.println("Too many instances already created - so skip creating new");
+            System.out.println(String.format("Too many instances(%1$d) already created - so skip creating new", instancesNow));
             return;
         }
 
