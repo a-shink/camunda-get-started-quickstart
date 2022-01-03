@@ -19,8 +19,11 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
     private static final List<String> items = List.of("FIRST ITEM", "item two", "Item#3", "Medium price product", "Luxury item$$$");
     private static final AtomicLong instancesCreated = new AtomicLong();
 
-    @Value("${process.create-num}")
+    @Value("${process.create-num:1}")
     private int processCreateNum;
+
+    @Value("${process.max-num:10}")
+    private int processMaxNum;
 
     @Autowired
     CamundaRestClient camundaClient;
@@ -33,7 +36,7 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
             instancesNow = instancesCreated.get();
         }
 
-        if (instancesNow > 20) {
+        if (instancesNow > processMaxNum) {
             LOG.debug(String.format("Too many instances(%1$d) already created - so skip creating new", instancesNow));
             return;
         }

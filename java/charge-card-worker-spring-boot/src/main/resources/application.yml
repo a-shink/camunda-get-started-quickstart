@@ -6,6 +6,7 @@ camunda.bpm.client:
 
 process:
   create-num: 2
+  max-num: 20
   defkey: payment-retrieval
 
 logging.level.ash.chargecardworker: debug
