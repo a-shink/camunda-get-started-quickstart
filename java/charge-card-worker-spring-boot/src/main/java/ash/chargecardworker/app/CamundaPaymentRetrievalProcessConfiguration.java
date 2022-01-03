@@ -15,7 +15,7 @@ public class CamundaPaymentRetrievalProcessConfiguration {
     @Autowired
     CamundaProcessService processService;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 1000)
     public void scheduleNewPaymentRetrievalProcess() {
         processService.create();
     }
