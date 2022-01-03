@@ -5,12 +5,11 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -30,19 +29,23 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
             instancesNow = instancesCreated.get();
         }
 
-        if (instancesNow > 10) {
+        if (instancesNow > 20) {
             LOG.debug(String.format("Too many instances(%1$d) already created - so skip creating new", instancesNow));
             return;
         }
 
 
-        long amount = 200l + new Random().nextInt(300);
-        String item = items.get(new Random().nextInt(items.size()));
-        boolean started = camundaClient.startProcess(item, amount);
+        String businessKey = UUID.randomUUID().toString();
 
-        if (started) {
-            instancesNow = instancesCreated.incrementAndGet();
-            LOG.debug("Created another instance - " + instancesNow);
+        for (int i = 0; i < 2; i++) {
+            long amount = 200L + new Random().nextInt(300);
+            String item = items.get(new Random().nextInt(items.size()));
+            boolean started = camundaClient.startProcess(businessKey, i, item, amount);
+
+            if (started) {
+                instancesNow = instancesCreated.incrementAndGet();
+                LOG.debug("Created another instance - " + instancesNow);
+            }
         }
     }
 
@@ -71,13 +74,14 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
 
         long instancesNow = camundaClient.countProcessInstances();
         // Don't pause when >13 instances
-        long pause = ((instancesNow != -1) && (instancesNow > 13))? 1 : 7500;
+        long pause = (instancesNow > 13)? 1 : 7500;
         try {
             Thread.sleep(pause);
         } catch (InterruptedException e) {}
 
         // Complete the task
         externalTaskService.complete(externalTask);
+        LOG.info("Complete External Task with id '{}'", externalTask.getId());
         instancesCreated.decrementAndGet();
     }
 }
