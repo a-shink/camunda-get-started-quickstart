@@ -74,11 +74,11 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
         LOG.debug("All variables of instance '{}' via REST: {}",  instanceId, varsDump);
 
         long instancesNow = camundaClient.countProcessInstances();
-        // Don't pause when >13 instances
-        long pause = (instancesNow > 13)? 1 : 7500;
+        // Don't pause when many launched
+        long pause = (instancesNow > processMaxNum/2)? 1 : 7500;
         try {
             Thread.sleep(pause);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException e) { e.printStackTrace(); }
 
         // Complete the task
         externalTaskService.complete(externalTask);
