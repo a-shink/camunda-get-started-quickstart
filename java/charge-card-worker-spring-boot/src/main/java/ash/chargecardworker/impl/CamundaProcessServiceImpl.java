@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicLong;
 class CamundaProcessServiceImpl implements CamundaProcessService{
     private static final Logger LOG = LoggerFactory.getLogger(CamundaProcessServiceImpl.class);
     private static final List<String> items = List.of("FIRST ITEM", "item two", "Item#3", "Medium price product", "Luxury item$$$");
-    private static final AtomicLong instancesCreated = new AtomicLong();
 
     @Value("${process.create-num:1}")
     private int processCreateNum;
@@ -31,10 +30,6 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
     @Override
     public void create() {
         long instancesNow = camundaClient.countProcessInstances();
-
-        if (instancesNow == -1) {
-            instancesNow = instancesCreated.get();
-        }
 
         if (instancesNow > processMaxNum) {
             LOG.debug(String.format("Too many instances(%1$d) already created - so skip creating new", instancesNow));
@@ -50,8 +45,7 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
             boolean started = camundaClient.startProcess(businessKey, i, item, amount);
 
             if (started) {
-                instancesNow = instancesCreated.incrementAndGet();
-                LOG.debug("Created another instance - " + instancesNow);
+                LOG.info("Created another instance#{}... {}", i, businessKey);
             }
         }
     }
@@ -89,6 +83,5 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
         // Complete the task
         externalTaskService.complete(externalTask);
         LOG.info("Complete External Task with id '{}'", externalTask.getId());
-        instancesCreated.decrementAndGet();
     }
 }
