@@ -4,6 +4,8 @@ camunda.bpm.client:
   base-url: http://localhost:8080/engine-rest # The URL pointing to the Camunda Platform Runtime REST API
   worker-id: charge-card-worker-spring-boot # Identifies the worker towards the Engine
 
-process.defkey: payment-retrieval
+process:
+  create-num: 2
+  defkey: payment-retrieval
 
 logging.level.ash.chargecardworker: debug

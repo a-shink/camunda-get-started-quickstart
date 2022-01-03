@@ -5,6 +5,7 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,9 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
     private static final Logger LOG = LoggerFactory.getLogger(CamundaProcessServiceImpl.class);
     private static final List<String> items = List.of("FIRST ITEM", "item two", "Item#3", "Medium price product", "Luxury item$$$");
     private static final AtomicLong instancesCreated = new AtomicLong();
+
+    @Value("${process.create-num}")
+    private int processCreateNum;
 
     @Autowired
     CamundaRestClient camundaClient;
@@ -37,7 +41,7 @@ class CamundaProcessServiceImpl implements CamundaProcessService{
 
         String businessKey = UUID.randomUUID().toString();
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < processCreateNum; i++) {
             long amount = 200L + new Random().nextInt(300);
             String item = items.get(new Random().nextInt(items.size()));
             boolean started = camundaClient.startProcess(businessKey, i, item, amount);
