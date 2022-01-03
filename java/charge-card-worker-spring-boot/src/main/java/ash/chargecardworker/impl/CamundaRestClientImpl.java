@@ -24,10 +24,13 @@ public class CamundaRestClientImpl implements CamundaRestClient {
     }
 
     @Override
-    public boolean startProcess(String item, long amount) {
+    public boolean startProcess(String businessKey, int num, String item, long amount) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        String body = String.format("{\"variables\": {\"amount\": {\"value\":%1$d, \"type\":\"long\"}, \"item\": {\"value\": \"%2$s\"} } }", amount, item);
+
+        String body = String.format("{\"businessKey\": \"%3$s\",\"variables\": " +
+                "{\"amount\": {\"value\":%1$d, \"type\":\"long\"}, \"num\": {\"value\":%4$d, \"type\":\"integer\"}, \"item\": {\"value\": \"%2$s\"} } }",
+                amount, item, businessKey, num);
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(
